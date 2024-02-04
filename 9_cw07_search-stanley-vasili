@@ -1,0 +1,193 @@
+//Goal: To sort blocks by size
+//***** TEMPLATE USED! NOT ENTIRELY WRITTEN BY STANLEY OR VASILI
+
+
+/*======================
+  Controls:
+  r: create new blocks, reset search
+  o: create new blocks in increasing size order, reset search
+  any other key: increase searchSize by 1, search for new block
+  ======================*/
+
+//constants
+int MIN_BLOCK_SIZE = 5;
+int NUM_BLOCKS = 50;
+
+//Driver variables
+BlockRow blocks;
+int searchSize;
+int foundBlock;
+boolean ordered;
+
+void setup() {
+  size(600, 600);
+  background(0);
+
+  searchSize = MIN_BLOCK_SIZE;
+  foundBlock = -1;
+  ordered = false;
+
+  blocks = new BlockRow(NUM_BLOCKS, ordered);
+  blocks.display();
+  lookFor(searchSize);
+}//setup
+
+void draw() {
+  background(0);
+  blocks.display();
+  displayInfo(searchSize, foundBlock);
+}//draw
+
+void keyPressed() {
+  if (key == 'r') {
+    blocks.setupBlocks(false);
+    reset();
+  }//reset
+  else if (key == 'o') {
+    blocks.setupBlocks(true);
+    reset();
+  }//reset ordered
+  else {
+    if (foundBlock != -1) {
+      blocks.setBlockColor(foundBlock, color(255));
+    }//found block reset color
+    searchSize = (searchSize+1);
+    lookFor(searchSize);
+  }//look for next value
+}//keyPressed
+
+void lookFor(int targetSize) {
+  foundBlock = blocks.find(targetSize);
+  if (foundBlock != -1) {
+    blocks.setBlockColor(foundBlock, color(255, 255, 0));
+  }//change found block color
+}//lookFor
+
+void reset() {
+  if (foundBlock != -1) {
+    blocks.setBlockColor(foundBlock, color(255));
+  }//change found block color
+  searchSize = MIN_BLOCK_SIZE;
+  foundBlock = -1;
+  lookFor(searchSize);
+}//reset
+
+void displayInfo(int targetSize, int foundIndex) {
+  fill(255);
+  textSize(20);
+  textAlign(LEFT, TOP);
+  String s = "Looking for size: " + searchSize;
+  s+= " Found at: " + foundIndex;
+  text(s, 0, 0);
+}//displayInfo
+
+class Block {
+
+  int cx, cy;
+  int sideLength;
+  color inside;
+
+  Block(int x, int y, int sl) {
+    sideLength = sl;
+    inside = color(255);
+    cx = x;
+    cy = y;
+  }//default constructor
+
+  void move(int x, int y) {
+    cx = x;
+    cy = y;
+  }//move
+
+  void display() {
+    fill(inside);
+    square(cx, cy, sideLength);
+
+    fill(0);
+    if (sideLength >= 100) {
+      textSize(75);
+    }
+    else {
+      textSize(sideLength);
+    }
+    textAlign(LEFT, TOP);
+    text(sideLength, cx, cy);
+  }//display
+
+
+}//Ball
+
+class BlockRow {
+  Block[] row;
+
+  int numBlocks;
+  int minBlockSize;
+  int maxBlockSize;
+
+  BlockRow(int nb, boolean orderd) {
+    numBlocks = nb;
+    minBlockSize = MIN_BLOCK_SIZE;
+
+    row = new Block[numBlocks];
+    setupBlocks(ordered);
+  }//setup
+
+  void setupBlocks(boolean ordered) {
+    maxBlockSize = 0;
+    minBlockSize = MIN_BLOCK_SIZE;
+    int topSize = 100;
+    
+    if (ordered) {
+      topSize = 10;
+    }
+    for (int i=0; i < row.length; i++) {
+      int bsize = int(random(minBlockSize, topSize));
+      if (maxBlockSize < bsize) {
+        maxBlockSize = bsize;
+      }//keep maxBlockSize up to date
+      row[i] = new Block(0, 0, bsize);
+      if (ordered) {
+        minBlockSize = bsize;
+        topSize = minBlockSize+5;
+      }//keep thigns ordered
+    }//array loop
+    rearrange();
+  }//setupBlocks
+
+  void rearrange() {
+    int x = 5;
+    int y = 25;
+    int topSize = 0;
+    for (int i=0; i < row.length; i++) {
+      if (topSize < row[i].sideLength) {
+        topSize = row[i].sideLength;
+      }//update topSize
+      if (x + row[i].sideLength >= width) {
+        x = 5;
+        y+= topSize + 5;
+      }//new row
+      row[i].move(x, y);
+      x+= row[i].sideLength +2;
+    }//array loop
+  }//rearrange
+
+  void display() {
+    for (int i=0; i < row.length; i++) {
+      row[i].display();
+    }//array loop
+  }//viewBlocks
+
+  void setBlockColor(int i, color c) {
+    row[i].inside = c;
+  }//resetBlockColor
+
+  int find(int targetSize) {
+    for (int i=0; i < row.length; i++) {
+      if (row[i].sideLength == targetSize) {
+        return i;
+      }//found!
+    }//array loop
+    return -1;
+  }//find
+
+}//BlockRow
