@@ -1,0 +1,267 @@
+//Goal: To recreate the game "Pong"
+//***** TEMPLATE USED! NOT ENTIRELY WRITTEN BY STANLEY OR JANICE
+
+//Global constants
+int BALL_SIZE = 10;
+int PADDLE_HEIGHT = 100;
+int PADDLE_WIDTH = 20;
+boolean playing;
+
+//Driver variables
+Ball b;
+Paddle player0;
+Paddle player1;
+int score;
+
+
+/* ===================
+ void setup()
+ After the score is set, initialize b and player0.
+ b should be a ball located at the center of the screen.
+ player0 should be paddle centered vertically on the screen,
+ 5 pixels in from the left edge of the screen.
+ =================== */
+void setup() {
+  size(600, 400);
+  background(0);
+  fill(255);
+  score = 0;
+  playing = false;
+
+  b = new Ball(width/2, height/2);
+  player0 = new Paddle(5);
+  player1 = new Paddle(width - 25);
+  
+}//setup
+
+
+/* ===================
+ void draw()
+ Display both b and player0.
+ Let the ball move normally.
+ Use the move method in the Paddle class so that
+ the center of player0 is located at the y
+ coordinate of the mouse. The x coordinate of player0
+ should not change.
+ If b hits the right edge of player0, then
+ call xbounce on b, add 1 to score and print the score.
+ =================== */
+void draw() {
+  background(0);
+  textSize(100);
+  text(score, 276, 233);
+  b.display();
+  player0.display();
+  player1.display();
+  player0.cornerY = mouseY - (PADDLE_HEIGHT/2);
+  player1.cornerY = mouseY - (PADDLE_HEIGHT/2);
+  
+  if (playing == true) {
+    b.move();
+  }
+  
+  if (b.cx == b.radius || b.cx == (width - b.radius)) {
+    b.reset();
+    score = 0;
+    playing = false;
+  }
+  
+  if (player0.hitRight(b) == true) {
+      b.xbounce();
+      score++;
+      println("Score: " + score);
+  } else if (player1.hitLeft(b) == true) {
+      b.xbounce();
+      score++;
+      println("Score: " + score);
+  }
+  
+  
+  
+  
+}//draw
+
+void keyPressed() {
+  if (key == ' ') {
+    b.reset();
+    score= 0;
+  }//reset
+}
+
+void mousePressed() {
+  if (playing == true) {
+    playing = false;
+  } else {
+    playing = true;
+  }
+}
+
+/* ===================
+ Ball Class
+
+ You do not need to modify any of this code.
+ You may need to look at the methods and instance
+ variables in order to complete parts of the assignment.
+ =================== */
+
+class Ball {
+
+  int cx, cy;
+  int xvelocity, yvelocity;
+  int radius;
+
+  //constructor
+  Ball() {
+    radius = BALL_SIZE;
+    reset();
+  }//default constructor
+
+  Ball(int x, int y) {
+    radius = BALL_SIZE;
+    cx = x;
+    cy = y;
+    xvelocity = int(random(5)+1) * (-1 * int(random(2+1)));
+    yvelocity = int(random(5)+1) * (-1 * int(random(2+1)));
+  }//position constructor
+
+  void reset() {
+    cx = width/2;
+    cy = height/2;
+    xvelocity = int(random(5)+1) * (-1 * int(random(2)+1));
+    yvelocity = int(random(5)+1) * (-1 * int(random(2)+1));
+  }//resetBall
+
+  void display() {
+    circle(cx, cy, radius * 2);
+  }//display
+
+  void move() {
+    if (cx <= radius || cx >= (width - 1 - radius)) {
+      xvelocity*= -1;
+    }//x bounce
+    if (cy <= radius || cy >= (height - 1 - radius)) {
+      yvelocity*= -1;
+    }//x bounce
+    cx+= xvelocity;
+    cy+= yvelocity;
+  }//moveBall
+
+  void xbounce() {
+    xvelocity*= -1;
+    cx += xvelocity;
+  }//xbounce
+
+  void ybounce() {
+    yvelocity*= -1;
+    cy += yvelocity;
+  }//ybounce
+
+  void changeSpeed(int x, int y) {
+    xvelocity+= x;
+    yvelocity+= y;
+  }//changeSpeed
+
+  boolean onBall(int x, int y) {
+    float d = dist(x, y, cx, cy);
+    return d <= radius;
+  }//onBall
+
+  int getScoreValue() {
+    int score = abs(xvelocity) + abs(yvelocity);
+    return score;
+  }//getScoreValue
+
+}//Ball
+
+class Paddle {
+
+  /* ===================
+   Instance variables
+   A Paddle should know the coordinates of
+   its upper-left corner, as well as its
+   width and height.
+   Create instance variables to sore this information.
+   =================== */
+  int cornerX, cornerY;
+
+  /* ===================
+   Default Constructor
+   Set the corner of the paddle to (0, 0) and
+   the size of the paddle to the PADDLE_WIDTH
+   and PADDLE_HEIGHT gloabl constants defined
+   in PongDriver.
+   =================== */
+  Paddle() {
+    cornerX = 0;
+    cornerY = 0;
+  }//default constructor
+/* ===================
+   Position constructor
+   Write a constructor that takes a single parameter that
+   represents the value the x coordinate of the corner shold
+   be.
+   It should set the size of the Paddle the same way the
+   default constructor does.
+   The corner should be set such that:
+   0) The paddle should be centered vertically on the screen.
+   1) The x value should be the value of the parameter passed in.
+   =================== */
+  Paddle(int xoffset) {
+    cornerX = xoffset;
+    cornerY = height/2;
+  }//x offset constructor
+
+  /* ===================
+   void display()
+   Draw a rectangle using the instance vairables.
+   =================== */
+  void display() {
+    fill(255);
+    rect(cornerX, cornerY, PADDLE_WIDTH, PADDLE_HEIGHT);
+  }//display
+
+  /* ===================
+   void move(int y)
+   Set the y value of the corner of the paddle
+   to the provided parameter.
+   =================== */
+void move(int y) {
+    cornerY = y;
+  }//move
+
+  /* ===================
+   boolean hitRight(Ball b)
+   Should return true if the Ball parameter is hitting
+   the right side of the paddle.
+   You can directly acces the instance variables of
+   b in this method (i.e. b.radius will return the
+   radius of b). You SHOULD NOT modify the instance
+   variables of b in this method.
+   =================== */
+
+  //boolean hitRight(Ball b) {
+  // int botY = cornerY + PADDLE_HEIGHT;
+  // if (b.cx == PADDLE_WIDTH + b.radius) {
+  //   return true;
+  // } else {
+  //   return false;
+  // }
+  //}
+
+  boolean hitRight(Ball b) {
+    if (b.cx <= (5 + PADDLE_WIDTH + b.radius) && b.cy > (this.cornerY - b.radius) && b.cy < (this.cornerY + PADDLE_HEIGHT + b.radius)) {
+          return true;
+    } else { 
+      return false; 
+  }
+  }
+  //b.cy <= cornerY && b.cy >= cornerY - PADDLE_HEIGHT
+  
+  boolean hitLeft(Ball b) {
+    if (b.cx >= (width - 5 - PADDLE_WIDTH - b.radius) && b.cy > (this.cornerY - b.radius) && b.cy < (this.cornerY + PADDLE_HEIGHT + b.radius)) {
+          return true;
+    } else { 
+      return false; 
+  }
+  }
+}//Paddle
