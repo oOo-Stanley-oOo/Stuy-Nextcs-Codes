@@ -1,0 +1,156 @@
+//Contributers: Stanley, Julian
+
+//Goal: To understand the code correctly fix it
+
+//***** NOT ENTIRELY WRITTEN BY STANLEY OR JULIAN (template given)
+
+void setup() {
+  size(400, 400);
+  PathShape ps;
+  Polygon p;
+  Triangle t;
+
+  Point center = new Point(0, 0);
+  ps = new PathShape(10, 0, 0, 200, 200);
+
+  center.x = 300;
+  center.y = 100;
+  p = new Polygon(10, center, 10, 100);
+
+  t = new Triangle(0, 200, 200, 400);
+
+  ps.display();
+  p.display();
+  t.display();
+
+  println(center);
+  println(ps);
+}//setup
+
+class PathShape {
+
+  //vertex coordinates
+  Point[] vertices;
+  int numPoints;
+  int setPoints;
+  color inside;
+  color border;
+
+  PathShape(int np) {
+    numPoints = np;
+    setPoints = 0;
+    vertices = new Point[numPoints];
+    inside = 255;
+    border = 0;
+  }//default contructor
+
+  PathShape(int np, Point center, int minRadius, int maxRadius) {
+    this(np);
+    makeRandomClosedPolygon(center, minRadius, maxRadius);
+  }//random closed polygon constructor
+
+  PathShape (int np, int minX, int minY, int maxX, int maxY) {
+    this(np);
+    makeRandomVertices(minX, minY, maxX, maxY);
+  }//random constructor
+
+  void addPoint(int x, int y) {
+    if (setPoints < numPoints) {
+      vertices[setPoints] = new Point(x, y);
+      setPoints++;
+    }//add point if there's room
+  }//addPoint
+
+  void addPoint(Point p) {
+    if (setPoints < numPoints) {
+      vertices[setPoints] = p;
+      setPoints++;
+    }//add point if there's room
+  }//addPoint
+
+  void display() {
+    fill(inside);
+    stroke(border);
+    beginShape();
+    for (int p=0; p < setPoints; p++) {
+      vertex(vertices[p].x, vertices[p].y);
+    }//loop over vertices
+    endShape(CLOSE);
+  }//display
+
+  void makeRandomVertices(int minX, int minY, int maxX, int maxY) {
+    for(int p=0; p < numPoints; p++) {
+      addPoint(new Point(minX, minY, maxX, maxY));
+    }//generate points loop
+  }//makeRandomVertices
+
+  void makeRandomClosedPolygon(Point center, int minRadius, int maxRadius) {
+    for(int p=0; p < numPoints; p++) {
+      float theta = radians((float(p)/numPoints) * 360);
+      int r = int(random(minRadius, maxRadius));
+      int x = int(r * cos(theta)) + center.x;
+      int y = int(r * sin(theta)) +  center.y;
+      addPoint(x, y);
+    }//generate points loop
+  }//makeRandomClosedPolygon
+
+  String toString() {
+    String s = "(" + numPoints + ", " + numPoints + ")";
+    return s;
+  }//toString
+}//PathShape
+
+class Point {
+
+  int x;
+  int y;
+
+  Point() {
+    x = 0;
+    y = 0;
+  }//default constructor
+
+  //constructor
+  Point(int _x, int _y) {
+    x = _x;
+    y = _y;
+  }//
+
+  //Random Constructor
+  Point (int minX, int minY, int maxX, int maxY) {
+    x = int(random(minX, maxX));
+    y = int(random(minY, maxY));
+  }//random constructor
+
+  String toString() {
+    String s = "(" + x + ", " + y + ")";
+    return s;
+  }//toString
+
+}//Point
+
+class Polygon extends PathShape {
+  Point center;
+
+  Polygon(int np, Point c, int minRadius, int maxRadius) {
+    super(np, c, minRadius, maxRadius);
+    center = c;
+  }//Polygon
+
+}//Polygon
+
+class Triangle extends PathShape {
+
+  Triangle() {
+    super(3);
+  }//default constructor
+
+  Triangle(Point center, int minRadius, int maxRadius) {
+    super(3, center, minRadius, maxRadius);
+  }//random constructor, center based
+
+  Triangle(int minX, int minY, int maxX, int maxY) {
+    super(3, minX, minY, maxX, maxY);
+  }//other random constructor
+
+}//Triangle
