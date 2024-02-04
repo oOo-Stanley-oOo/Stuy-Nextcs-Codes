@@ -1,0 +1,13 @@
+//Goal: Testing the accuracy of ChatGPT in generating code
+
+class Polygon { int numSides; PVector[] vertices;
+
+Polygon(int numSides) { // Initialize Polygon object with random vertices this.numSides = numSides; vertices = new PVector[numSides]; for (int i = 0; i < numSides; i++) { vertices[i] = new PVector(random(50, width - 50), random(50, height - 50)); } }
+
+void display() { // Draw Polygon object to screen beginShape(); for (PVector v : vertices) { vertex(v.x, v.y); } endShape(CLOSE); }
+
+String toString() { // Generate string representation of Polygon object String s = "Polygon with " + numSides + " sides:\n"; for (PVector v : vertices) { s += "(" + v.x + ", " + v.y + ")\n"; } return s; } }
+
+class Triangle extends Polygon { Triangle() { super(3); } }
+
+class RegularGon extends Polygon { RegularGon(int numSides) { super(numSides); // Adjust vertices to form a regular polygon float angle = TWO
