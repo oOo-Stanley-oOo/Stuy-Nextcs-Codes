@@ -1,0 +1,141 @@
+//Goal: To create a game that involves clicking a bouncing ball
+//***** TEMPLATE USED! NOT ENTIRELY WRITTEN BY STANLEY OR JANICE
+
+
+
+/* ===================
+ This program, when completed, will create a simple game.
+ The objective of the game is to click a circle (or ball)
+ as it moves around the screen.
+ This assignment is broken up into 4 parts. The code you
+ need to complete each part is clearly labeled. Do not
+ move to a new part until you have completed the previous
+ ones.
+ PART 0: Set global variables for the ball to appear on the screen.
+ PART 1: Capture keyboard events to control the ball's movement.
+ PART 2: Change the position of the ball on the screen based on
+ the velocity global variables. When the ball hits a wall,
+ it should "bounce" in the opposite direction.
+ PART 3: Update the score based on the xvelocity and yvelocity
+ values.
+ PART 4: Capture the mousePressed event so that if the player
+ successfully clicks on the ball, their score gets
+ updated and the ball resets.
+ =================== */
+
+/* ===================
+ Global variables, setup() & draw()
+ LEAVE THESE ALONE
+ =================== */
+int x, y; //position of the ball
+int xvelocity, yvelocity; //speed of the ball
+int radius; //size of the ball
+int score;
+
+void setup() {
+  size(600, 400);
+  background(0);
+  score = 0;
+
+  /* PART 0
+   Complete resetBall below. */
+  resetBall();
+}//setup
+
+void draw() {
+  background(0);
+  circle(x, y, radius*2);
+
+  /* PART 2
+   Complete moveBall below. */
+  moveBall();
+}//draw
+
+/* PART 0
+ Complete this method.
+ When run, it should set the global variables as follows:
+ x: a random value in the range [radius, width - radius)
+ y: a random value in the range [radius, height0 - radius)
+ The other variables should be left alone.
+ */
+void resetBall() {
+  radius = 20;
+  xvelocity = 0;
+  yvelocity = 0;
+  x = int(random(radius, width-radius));
+  y = int(random(radius, height-radius));
+}//resetBall
+
+
+/* PART 1
+ Complete this method. keyPressed should act when the following keys
+ have been detected:
+ space (or ' '): call resetBall()
+ up arrow: decrease yvelocity by 1
+ down arrow: increase yvelocity by 1
+ left arrow: decrease xvelocity by 1
+ right arrow: increase xvelocity by 1
+ */
+void keyPressed() {
+  if (key == ' ') {
+    resetBall();
+  }
+  if (keyCode == UP) {
+    yvelocity -=1;
+  }
+  if (keyCode == DOWN) {
+    yvelocity +=1;
+  }
+  if (keyCode == LEFT) {
+    xvelocity -=1;
+  }
+  if (keyCode == RIGHT) {
+    xvelocity +=1;
+  }
+}//keyPressed
+
+
+/* PART 2
+ Complete this method.
+ First, check if the x position of the ball would result in
+ part of the ball being off screen (remember to accoutn for
+ the radius). If it is, change the direction of the xvelocity.
+ Do the same thing for the y position of the ball, changing
+ the direction of the yvelocity instead.
+ Then, add the xvelocity to x and yvelocity to y.
+ */
+void moveBall() {
+  if (x + radius >= width || x - radius <= 0) {
+    xvelocity = xvelocity* -1;
+  }
+  if (y + radius >= height || y - radius <= 0) {
+    yvelocity = yvelocity* -1;
+  }
+
+  x += xvelocity;
+  y += yvelocity;
+}//moveBall
+
+/* PART 3
+ Complete this method.
+ Add the absolute value of xvelocity and
+ yvelocity to score.
+ Print out the score.
+ */
+void scoreUpdate() {
+  score += abs(xvelocity)+abs(yvelocity);
+  println("Score:" + score);
+}//scoreUpdate
+
+/* PART 4
+ Complete this method.
+ If the player clicks anywhere inside the ball,
+ call scoreUpdate and resetBall
+ */
+void mousePressed() {
+  float distance = (sqrt (pow((mouseX - x), 2) + pow((mouseY - y), 2) ));
+  if (distance <= radius) {
+      scoreUpdate();
+      resetBall();
+  }
+}//mousePressed
