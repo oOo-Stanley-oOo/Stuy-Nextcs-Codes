@@ -1,0 +1,292 @@
+//Goal: To arrange square in the program in a specific pattern
+//***** TEMPLATE USED! NOT ENTIRELY WRITTEN BY STANLEY, ANAND, ALP, OR KATHLEEN
+
+
+/* ===================
+ Global variables:
+ numCols, numRows: number of tiles hroizontally and vertically
+ xSize, xWidth: size of each individual tile.
+ count: needed to cycle through functions in draw()
+ =================== */
+int rows;
+int cols;
+int xSize;
+int ySize;
+int count;
+
+
+/* ===================
+ You should not modify this function except
+ if you want to change the frameRate for testing.
+ =================== */
+void setup() {
+  size(600, 450);
+  frameRate(1);
+  rows = 18;
+  cols = 30;
+  xSize = 20;
+  ySize = 25;
+  count = 0;
+}
+
+/* ===================
+ DO NOT MODIFY DRAW.
+ 
+ This will test each of the functions below.
+ 
+ You may change the fill color if you like.
+ =================== */
+void draw() {
+
+  if (count < 5 ) {
+    tile(rows, cols, xSize, ySize);
+  } else if (count < 10) {
+    alternateRows(rows, cols, xSize, ySize);
+  } else if (count < 15) {
+    triColor(rows, cols, xSize, ySize);
+  } else if (count < 20) {
+    rainbow(rows, cols, xSize, ySize);
+  } else if (count < 25) {
+    triangleFlag(rows, cols, xSize, ySize);
+  } else if (count < 30) {
+    checkerboard(rows, cols, xSize, ySize);
+  }
+  count = (count + 1) % 30;
+}
+
+/* ===================
+ Create a grid of rectangles using the  provided parameters.
+ =================== */
+void tile(int numRows, int numCols, int rectWidth, int rectHeight) {
+  int x, y, xCount, yCount;
+  
+  x = 0;
+  y = 0;
+  xCount = 0;
+  yCount = 0;
+  
+  fill(255);
+  
+  
+  while (yCount < numRows) {
+    while (xCount < numCols) {
+    rect(x, y, rectWidth, rectHeight);
+    x += rectWidth;
+    xCount ++;
+  }
+  y += rectHeight;
+  yCount += 1;
+  xCount = 0;
+  x = 0;
+  }
+  
+}//tile
+
+/* ===================
+ Create a grid of rectangles using the  provided parameters.
+ Select 2 fill colors.
+ The fill color should alternate every other ROW.
+ =================== */
+void alternateRows(int numRows, int numCols, int rectWidth, int rectHeight) {
+  int x, y, xCount, yCount;
+  
+  x = 0;
+  y = 0;
+  xCount = 0;
+  yCount = 0;
+  
+  fill(255);
+  
+  while (yCount < numRows) {
+    
+    
+    while (xCount < numCols) {
+    rect(x, y, rectWidth, rectHeight);
+    x += rectWidth;
+    xCount ++;
+  }
+  
+  y += rectHeight;
+  yCount += 1;
+  xCount = 0;
+  x = 0;
+  if ((yCount-1) % 2 == 0) {
+      fill(0); 
+    }
+  else {
+    fill(255);
+  }
+  }
+}//alternateRows
+
+
+/* ===================
+ Create a grid of rectangles using the provided parameters.
+ Select 2 fill colors. 
+ The fill color should create a checkerboard pattern with your selected colors.
+ =================== */
+void checkerboard(int numRows, int numCols, int rectWidth, int rectHeight) {
+  int x, y, xCount, yCount;
+  
+  x = 0;
+  y = 0;
+  xCount = 0;
+  yCount = 0;
+  
+  fill(255);
+  
+  
+  while (yCount < numRows) {
+    while (xCount < numCols) {
+      if ((xCount + yCount) % 2 == 0) {
+       fill(0);
+      }
+      else {
+       fill(255); 
+      }
+    rect(x, y, rectWidth, rectHeight);
+    x += rectWidth;
+    xCount ++;
+  }
+  
+  y += rectHeight;
+  yCount += 1;
+  xCount = 0;
+  x = 0;
+  
+  }
+}//checkerboard
+
+/* ===================
+ Create a grid of rectangles using the  provided parameters.
+ The tiles from the left side up to one-fourth of the grid should be red.
+ The tiles between one fourth of the grid and half of the grid should be green.
+ The remaining tiles should be blue.
+ 
+ You should not use the logical && or || operators. Keep your conditional statements
+ to a single condition.
+ =================== */
+void triColor(int numRows, int numCols, int rectWidth, int rectHeight) {
+  int x, y, xCount, yCount;
+  
+  x = 0;
+  y = 0;
+  xCount = 0;
+  yCount = 0;
+  
+  fill(255);
+  
+  while (yCount < numRows) {
+    while (xCount < numCols) {
+    if (xCount < numCols/4) {
+     fill(255, 0, 0); 
+    }
+    
+    else if (xCount < numCols/2) {
+     fill(0, 255, 0); 
+    }
+    
+    else {
+     fill(0, 0, 255); 
+    }
+    
+    rect(x, y, rectWidth, rectHeight);
+    x += rectWidth;
+    xCount ++;
+  }
+  y += rectHeight;
+  yCount += 1;
+  xCount = 0;
+  x = 0;
+  }
+}//triColor
+
+/* ===================
+ Create a grid of rectangles using the  provided parameters.
+ Vertically, the tiles should create a rainbow of 
+ red, orange, yellow, green, blue, purple.
+ Each color should made made of the same amount of tiles.
+ 
+ You should not use the logical && or || operators. Keep your conditional statements
+ to a single condition.
+ =================== */
+void rainbow(int numRows, int numCols, int rectWidth, int rectHeight) {
+  int x, y, xCount, yCount;
+  
+  x = 0;
+  y = 0;
+  xCount = 0;
+  yCount = 0;
+  
+  fill(255);
+  
+  while (yCount < numRows) {
+    while (xCount < numCols) {
+      if (yCount < numRows/6) {
+       fill(255, 0, 0); 
+      }
+      else if (yCount < numRows/3) {
+       fill(255, 165, 0);
+      }
+      else if (yCount < numRows/2) {
+       fill(255, 255, 0);
+      }
+      else if (yCount < 2*numRows/3) {
+       fill(0, 255, 0); 
+      }
+      else if (yCount < 5*numRows/6) {
+       fill(0, 0, 255); 
+      }
+      else {
+       fill(75, 0, 130); 
+      }
+      
+      
+    rect(x, y, rectWidth, rectHeight);
+    x += rectWidth;
+    xCount ++;
+  }
+  y += rectHeight;
+  yCount += 1;
+  xCount = 0;
+  x = 0;
+  }
+}//rainbow
+
+void triangleFlag(int numRows, int numCols, int rectWidth, int rectHeight) {
+  int x, y, xCount, yCount;
+  
+  x = 0;
+  y = 0;
+  xCount = 0;
+  yCount = 0;
+  
+  fill(255);
+  
+  while (yCount < numRows) {
+    while (xCount < numCols) {
+      fill(255);
+      if (xCount < 9) {
+        if (yCount < 9){
+         if (yCount >= xCount) {
+          fill(0); 
+         }
+         
+        }
+        else {
+          if (yCount + xCount -9 < 9 ) {
+           fill(0); 
+          }
+        }
+      }
+    rect(x, y, rectWidth, rectHeight);
+    x += rectWidth;
+    xCount ++;
+  }
+  y += rectHeight;
+  yCount += 1;
+  xCount = 0;
+  x = 0;
+  }
+  
+}//triangle flag
