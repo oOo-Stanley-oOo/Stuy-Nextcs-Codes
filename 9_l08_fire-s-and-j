@@ -1,0 +1,205 @@
+//By Janice and Stanley
+//Goal: To modify pixels depending on their states (fire turns grass into fire then into burnt and dirt doesn't get burned)
+//***** TEMPLATE USED, NOT ENTIRELY WRITTEN BY JANICE OR STANLEY
+
+//State variable constants
+int DIRT = 0;
+int FIRE = 1;
+int BURNT = 2;
+int GRASS = 3;
+
+
+//Helpful color values
+color DIRT_COLOR = #81582F;
+color FIRE_COLOR = #F20C0C;
+color BURNT_COLOR = #810707;
+color GRASS_COLOR = #49B90D;
+
+//Driver variables
+boolean burning = false;
+int grassDensity = 60;
+int numTracts = 50;
+int tractLength = 50;
+Field f;
+
+
+void setup() {
+  size(700, 700);
+  frameRate(5);
+  f = new Field(numTracts, tractLength, grassDensity);
+  f.showLand();
+}//setup
+
+void draw() {
+  f.showLand();
+  if (burning) {
+    f.wildFire();
+  }//burning
+}//draw
+
+
+
+void keyPressed() {
+  if (key == ' ') {
+    burning = !burning;
+  }//start burning
+  else if (key == 'r') {
+    burning = false;
+    f.setupLand(grassDensity);
+  }
+}
+
+class Field {
+
+  Land[][] grid;
+  int numTracts;
+  int numPlots;
+
+  Field(int numRows, int numCols, float density) {
+    numTracts = numRows;
+    numPlots = numCols;
+    grid = new Land[numTracts][numPlots];
+    setupLand(density);
+  }//constructor
+
+
+  void setupLand(float density) {
+    //figure out size of each plot of land
+    int plotSize = width / numPlots;
+
+    //instantiate each Land object
+    for (int r=0; r<grid.length; r++) {
+      for (int p=0; p < grid[r].length; p++) {
+        int type = DIRT;
+
+        //first Land object should be FIRE
+        if (p == 0) {
+          type = FIRE;
+        }//start with fire
+
+        //Chance for grass is based on density
+        else if (random(100) < density) {
+          type = GRASS;
+        }//grass land
+
+        //creates a new land at (x, y) with size plotSize and type
+        grid[r][p] = new Land(p*plotSize, r*plotSize, plotSize, type);
+      }//col loop
+    }//row loop
+  }//setupLand
+
+  void showLand() {
+    for (int r=0; r < grid.length; r++) {
+      for (int p=0; p < grid[r].length; p++) {
+      grid[r][p].display();
+      }//col
+    }//row
+  }//showLand
+
+void liveFire() {
+    //First, check Land objects to the left, apply state change rules.
+    for (int r=0; r < grid.length; r++) {
+      //Assume nothing useful to the left of row[0]
+      grid[r][0].updateNextState(false);
+      for (int p=1; p < grid[r].length; p++) {
+        grid[r][p].updateNextState(grid[r][p-1].state == FIRE);
+      }//set nextStates for all plots
+    }//row
+
+    //Based on potential state changes from updateNextState
+    for (int r=0; r < grid.length; r++) {
+      for (int p=0; p < grid[r].length; p++) {
+        grid[r][p].changeState();
+      }//col
+    }//change states
+  }//liveFire
+  
+  void wildFire() {
+    //Check Land objects to the left, right, up, and down, apply state change rules.
+    for (int r=0; r < grid.length; r++) {
+      //Assume nothing useful to the left of row[0]
+      grid[r][0].updateNextState(true);
+      for (int p=1; p < grid[r].length; p++) {
+        boolean left = false;
+        boolean right = false;
+        boolean up = false;
+        boolean down = false; //assume everything is false first so nothing changes
+
+        //left
+        if(p-1 >= 0){
+          left = grid[r][p-1].state == FIRE;
+        }
+        //right
+        if(p+1 < grid[r].length){
+          right = grid[r][p+1].state == FIRE;
+        }
+        //up
+        if(r-1 >= 0){
+          up = grid[r-1][p].state == FIRE;
+        }
+        //down
+        if(r+1 < grid.length){
+          down = grid[r+1][p].state == FIRE;
+        }
+
+        grid[r][p].updateNextState(left || right || up || down);
+        grid[r][p].changeState();
+      }//set nextStates for all plots
+    }//row
+
+}
+
+}//class Field
+
+class Land {
+
+  int size;
+  int state;
+  int nextState;
+  int x;
+  int y;
+
+  Land(int _x, int _y, int sz, int st) {
+    x = _x;
+    y = _y;
+    size = sz;
+    state = st;
+  }
+
+  void display() {
+    if (state == DIRT) {
+      fill(DIRT_COLOR);
+    }
+    else if (state == FIRE) {
+      fill(FIRE_COLOR);
+    }
+    else if (state == BURNT) {
+      fill(BURNT_COLOR);
+    }
+    else if (state == GRASS) {
+      fill(GRASS_COLOR);
+    }
+    square(x, y, size);
+  }
+
+void updateNextState(boolean neighborState) {
+    if (state == FIRE) {
+      nextState = BURNT;
+    }
+    else if (state == GRASS && neighborState  == true) {
+      nextState = FIRE;
+    }
+    else {
+      nextState = state;
+    }
+  }//updateState
+
+  void changeState() {
+    state = nextState;
+  }//changeState
+
+}//Land class
+
+}//Land class
+
+}//Land class
