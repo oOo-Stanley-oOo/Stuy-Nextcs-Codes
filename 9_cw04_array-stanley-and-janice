@@ -1,0 +1,42 @@
+//Goal: To sort and manage bar charts according to size and arrangement
+//***** CONTAINS .png IMAGES
+
+
+int[] values;
+
+void setup() {
+  size(300, 200);
+  values = new int[10];
+  randomArray(values, 50, height);
+  drawBarsInverted(values, width/values.length);
+}//setup
+
+void randomArray(int[] data, int low, int high) {
+  for (int i=0; i<data.length; i++) {
+    data[i] = int(random(low, high));
+  }//array loop
+}//randomArray
+
+void drawBars(int[] data, int barWidth) {
+  stroke(0);
+  fill(255);
+  int startX = 0;
+  int startY = 0;
+  for (int i=0; i<(values.length); i++) {
+    rect(startX, startY, barWidth, startY + data[i]);
+    startX = startX + barWidth;
+    println(data[i]);
+  }
+}//drawValues
+
+void drawBarsInverted(int[] data, int barWidth) {
+  stroke(0);
+  fill(255);
+  int startX = 0;
+  int startY = height;
+  for (int i=0; i<(values.length); i++) {
+    rect(startX, startY, barWidth, -(startY + data[i])+ height);
+    startX = startX + barWidth;
+    println(data[i]);
+  }
+}//drawValues
